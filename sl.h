@@ -15,9 +15,9 @@
 
 #define D51STR1  "      ====        ________                ___________ "
 #define D51STR2  "  _D _|  |_______/        \\__I_I_____===__|_________| "
-#define D51STR3  "   |(_)---  |   H\\________/ |   |        =|___ ___|   "
-#define D51STR4  "   /     |  |   H  |  |     |   |         ||_| |_||   "
-#define D51STR5  "  |      |  |   H  |__--------------------| [___] |   "
+#define D51STR3  "   |(_)---  |   H\\________/ |   |        =|_______|   "
+#define D51STR4  "   /     |  |   H  |  |     |   |         |  |_|  |   "
+#define D51STR5  "  |      |  |   H  |__--------------------|  |_|  |   "
 #define D51STR6  "  | ________|___H__/__|_____/[][]~\\_______|       |   "
 #define D51STR7  "  |/ |   |-----------I_____I [][] []  D   |=======|__ "
 
@@ -47,18 +47,36 @@
 
 #define D51DEL   "                                                      "
 
+#define COALWIDTH 30
+
 #define COAL01 "                              "
 #define COAL02 "                              "
 #define COAL03 "    _________________         "
-#define COAL04 "   _|                \\_____A  "
+#define COAL04 "   _|                \\______  "
 #define COAL05 " =|                        |  "
 #define COAL06 " -|                        |  "
-#define COAL07 "__|________________________|_ "
-#define COAL08 "|__________________________|_ "
+#define COAL07 "__|________________________|  "
+#define COAL08 "|__________________________|= "
 #define COAL09 "   |_D__D__D_|  |_D__D__D_|   "
 #define COAL10 "    \\_/   \\_/    \\_/   \\_/    "
 
 #define COALDEL "                              "
+
+
+#define COACH01 "                              "
+#define COACH02 "                              "
+#define COACH03 "                              "
+#define COACH04 "                       ++     "
+#define COACH05 "  _____________________||____ "
+#define COACH06 "  |   ___  ___   ___  ___   | "
+#define COACH07 "  | ~ |_|  |_| ~ |_|  |_| ~ | "
+#define COACH08 "==|_________________________| "
+#define COACH09 "  |_________________________| "
+#define COACH10 "    (O)   (O)    (O)   (O)    "
+
+#define COACHDEL "                              "
+#define COACHWIDTH 30
+
 
 #define LOGOHIGHT    	 6
 #define LOGOFUNNEL  	 4

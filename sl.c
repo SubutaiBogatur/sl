@@ -6,6 +6,8 @@
  *        Last Modified: 2014/06/03
  *========================================
  */
+/* sl version 6.00 : Added cool options to customize number of coaches       */
+/*                                              by Alex Tukallo   2016/04/10 */
 /* sl version 5.02 : Fix compiler warnings.                                  */
 /*                                              by Jeff Schwab    2014/06/03 */
 /* sl version 5.01 : removed cursor and handling of IO                       */
@@ -46,13 +48,15 @@ void add_man(int y, int x);
 int add_C51(int x);
 int add_D51(int x);
 int add_sl(int x);
-void option(char *str);
+void option(char *str, int index, char* argv[]);
 int my_mvaddstr(int y, int x, char *str);
 
 int ACCIDENT  = 0;
 int LOGO      = 0;
 int FLY       = 0;
-int C51       = 0;
+int C51       = 0; //https://en.wikipedia.org/wiki/JNR_Class_C51 some insides and also: https://en.wikipedia.org/wiki/JNR_Class_D51
+int NUM_COACHES = 3;
+int MILES_PER_HOUR = 50; //default velocity of vehicle
 
 int my_mvaddstr(int y, int x, char *str)
 {
@@ -63,28 +67,42 @@ int my_mvaddstr(int y, int x, char *str)
     return OK;
 }
 
-void option(char *str)
+int read_number(int start_index, char* str)
 {
-    extern int ACCIDENT, FLY, LONG;
+    int ret = 0;
+    int cur = start_index;
+    while (str[cur] != '\0')
+    {
+        ret = ret * 10 + str[cur] - '0';
+        cur++; 
+    }
+    return ret;
+}
 
+void option(char *str, int index, char* argv[])
+{
     while (*str != '\0') {
         switch (*str++) {
-            case 'a': ACCIDENT = 1; break;
-            case 'F': FLY      = 1; break;
-            case 'l': LOGO     = 1; break;
-            case 'c': C51      = 1; break;
+            // case 'a': ACCIDENT = 1; break; //todo later
+            // case 'F': FLY      = 1; break; // I don't like this feature, let's disable it
+            // case 'l': LOGO     = 1; break; // sorry
+            // case 'c': C51      = 1; break;
+            case 'n': NUM_COACHES = read_number(0, argv[index + 1]); break;
+            case 's': MILES_PER_HOUR = read_number(0, argv[index + 1]); break;
             default:                break;
         }
     }
 }
 
+int train_length;
+
 int main(int argc, char *argv[])
 {
-    int x, i;
+    int x;
 
-    for (i = 1; i < argc; ++i) {
+    for (int i = 1; i < argc; ++i) {
         if (*argv[i] == '-') {
-            option(argv[i] + 1);
+            option(argv[i] + 1, i, argv);
         }
     }
     initscr();
@@ -94,6 +112,8 @@ int main(int argc, char *argv[])
     nodelay(stdscr, TRUE);
     leaveok(stdscr, TRUE);
     scrollok(stdscr, FALSE);
+
+    train_length = D51LENGTH + NUM_COACHES * COACHWIDTH;
 
     for (x = COLS - 1; ; --x) {
         if (LOGO == 1) {
@@ -107,7 +127,7 @@ int main(int argc, char *argv[])
         }
         getch();
         refresh();
-        usleep(40000);
+        usleep((int)((40000 * 50) / MILES_PER_HOUR));
     }
     mvcur(0, COLS - 1, LINES - 1, 0);
     endwin();
@@ -135,10 +155,6 @@ int add_sl(int x)
     if (x < - LOGOLENGTH)  return ERR;
     y = LINES / 2 - 3;
 
-    if (FLY == 1) {
-        y = (x / 6) + LINES - (COLS / 6) - LOGOHIGHT;
-        py1 = 2;  py2 = 4;  py3 = 6;
-    }
     for (i = 0; i <= LOGOHIGHT; ++i) {
         my_mvaddstr(y + i, x, sl[(LOGOLENGTH + x) / 3 % LOGOPATTERNS][i]);
         my_mvaddstr(y + i + py1, x + 21, coal[i]);
@@ -170,26 +186,33 @@ int add_D51(int x)
             D51WHL51, D51WHL52, D51WHL53, D51DEL},
            {D51STR1, D51STR2, D51STR3, D51STR4, D51STR5, D51STR6, D51STR7,
             D51WHL61, D51WHL62, D51WHL63, D51DEL}};
+
     static char *coal[D51HIGHT + 1]
         = {COAL01, COAL02, COAL03, COAL04, COAL05,
            COAL06, COAL07, COAL08, COAL09, COAL10, COALDEL};
 
+    static char *coach[D51HIGHT + 1]
+        = {COACH01, COACH02, COACH03, COACH04, COACH05,
+           COACH06, COACH07, COACH08, COACH09, COACH10, COACHDEL};
+
     int y, i, dy = 0;
 
-    if (x < - D51LENGTH)  return ERR;
+    if (x < - train_length)  return ERR;
+
     y = LINES / 2 - 5;
 
-    if (FLY == 1) {
-        y = (x / 7) + LINES - (COLS / 7) - D51HIGHT;
-        dy = 1;
-    }
     for (i = 0; i <= D51HIGHT; ++i) {
-        my_mvaddstr(y + i, x, d51[(D51LENGTH + x) % D51PATTERNS][i]);
-        my_mvaddstr(y + i + dy, x + 53, coal[i]);
+        my_mvaddstr(y + i, x, d51[(D51LENGTH + (x > 0 ? x : -x)) % D51PATTERNS][i]);
+        my_mvaddstr(y + i, x + 53, coal[i]);
+        for (int j  = 0; j < NUM_COACHES; j++) 
+        {
+            my_mvaddstr(y + i, x + 53 + COALWIDTH * (j + 1) , coach[i]);
+        }
     }
     if (ACCIDENT == 1) {
         add_man(y + 2, x + 43);
         add_man(y + 2, x + 47);
+        //todo add men to coaches!!
     }
     add_smoke(y - 1, x + D51FUNNEL);
     return OK;
