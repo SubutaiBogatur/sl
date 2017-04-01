@@ -41,6 +41,7 @@
 #include <curses.h>
 #include <signal.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include "sl.h"
 
 void add_smoke(int y, int x);
@@ -79,6 +80,14 @@ int read_number(int start_index, char* str)
     return ret;
 }
 
+void print_help_msg()
+{
+    printf("This is the best train ever with customizable number of coaches and speed.\n"
+        "Available options:\n"
+        "\t -n specifies number of coaches, default is 3\n"
+        "\t -s specifies speed, default is 50 Miles per hour. It takes 3 hours with this speed to get from Tokyo to Kioto!\n");
+}
+
 void option(char *str, int index, char* argv[])
 {
     while (*str != '\0') {
@@ -89,6 +98,7 @@ void option(char *str, int index, char* argv[])
             // case 'c': C51      = 1; break;
             case 'n': NUM_COACHES = read_number(0, argv[index + 1]); break;
             case 's': MILES_PER_HOUR = read_number(0, argv[index + 1]); break;
+            case 'h': print_help_msg(); exit(0);
             default:                break;
         }
     }
